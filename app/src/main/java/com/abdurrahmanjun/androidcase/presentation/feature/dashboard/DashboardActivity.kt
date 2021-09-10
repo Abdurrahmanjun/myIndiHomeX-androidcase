@@ -1,11 +1,12 @@
-package com.abdurrahmanjun.androidcase
+package com.abdurrahmanjun.androidcase.presentation.feature.dashboard
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.presentation.feature.topstory.TopStoryFragment
 
-class MainActivity : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
