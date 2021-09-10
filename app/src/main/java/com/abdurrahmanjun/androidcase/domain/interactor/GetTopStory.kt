@@ -1,5 +1,6 @@
 package com.abdurrahmanjun.androidcase.domain.interactor
 
+import android.util.Log
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
 import com.abdurrahmanjun.androidcase.data.topstory.repository.source.network.result.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.domain.model.Story
@@ -20,12 +21,12 @@ class GetTopStory {
             }
     }
 
-    fun transformArrayIntegerIntoPost(list: ArrayList<Int>) : ArrayList<Story> {
+    fun transformArrayIntegerIntoPost(list: List<Int>) : ArrayList<Story> {
 
         val listOfStory : ArrayList<Story> = arrayListOf<Story>()
         for (i in 0 until list.size) {
             listOfStory.add(
-                Story("", 0, list[i], 0, 0,"", "", "")
+                Story("", true,0, list[i], 0, 0,"", "", "")
             )
         }
 
@@ -33,23 +34,27 @@ class GetTopStory {
     }
 
     fun execute(story: Story): Observable<Story>? {
-        return ServiceGenerator.getRequestApi()
-            .getComments(story.id)
-            .subscribeOn(Schedulers.io())
-            .map { response ->
-                transformRawResponseIntoStory(response)
-            }
+        return story.id?.let {
+            ServiceGenerator.getRequestApi()
+                .getComments(it)
+                .subscribeOn(Schedulers.io())
+                .map { response ->
+                    transformRawResponseIntoStory(response)
+                }
+        }
     }
 
-    private fun transformRawResponseIntoStory(response: StoryDetailsResult): Story? {
+    fun transformRawResponseIntoStory(response: StoryDetailsResult): Story {
+        Log.d("transformRawResponseIntoStory", response.toString())
         return Story(response.by,
+            false,
             response.descendants,
             response.id,
             response.score,
             response.time,
             response.title,
             response.type,
-            response.url
+            response.url,
         )
     }
 }

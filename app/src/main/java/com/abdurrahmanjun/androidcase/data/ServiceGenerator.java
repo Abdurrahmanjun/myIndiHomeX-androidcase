@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
 
-    public static final String BASE_URL = "https://hacker-news.firebaseio.com/v0";
+    public static final String BASE_URL = "https://hacker-news.firebaseio.com/v0/";
 
     private static Retrofit.Builder retrofitBuilder =
             new Retrofit.Builder()

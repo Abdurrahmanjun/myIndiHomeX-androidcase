@@ -4,10 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_calendar_today_24.xml" value="0.25" />
+        <entry key="app/src/main/res/drawable/progress.xml" value="0.22870370370370371" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22395833333333334" />
         <entry key="app/src/main/res/layout/fragment_story_details.xml" value="0.23435897435897435" />
         <entry key="app/src/main/res/layout/fragment_story_list.xml" value="0.23435897435897435" />
-        <entry key="app/src/main/res/layout/row_story.xml" value="0.2699797623225348" />
+        <entry key="app/src/main/res/layout/row_story.xml" value="0.23507213164891216" />
       </map>
     </option>
   </component>
