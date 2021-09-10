@@ -15,6 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
 import com.abdurrahmanjun.androidcase.data.database.AndroidCaseDao
 import com.abdurrahmanjun.androidcase.data.database.AndroidCaseDatabase
@@ -86,18 +87,22 @@ class TopStoryFragment : Fragment() {
             val favoriteStory = dao?.getAll()
 
             when (favoriteStory?.size) {
-                0 -> hideOthersCard("You havent choose any favorite story")
-                1 -> hideOthersCard(favoriteStory.get(0).storyTitle.toString())
+                0 -> hideOthersCard("You haven't chosen any favorite stories yet",true)
+                1 -> hideOthersCard(favoriteStory.get(0).storyTitle.toString(),false)
                 else -> { // Note the block
+                    binding.tvFavorite.text = favoriteStory?.get(0)?.storyTitle.toString()
                     binding.tvMoreFavorite.text = "${favoriteStory?.size?.minus(1)} more"
                 }
             }
         }
     }
 
-    private fun hideOthersCard(s: String) {
+    private fun hideOthersCard(s: String,applySecondary : Boolean) {
         binding.cvOthersFav.visibility = GONE
         binding.tvFavorite.text = s
+        if (applySecondary) {
+            binding.tvFavorite.setTextColor(resources.getColor(R.color.md_grey_light))
+        }
     }
 
     private fun initRecyclerView() {
