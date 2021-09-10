@@ -53,6 +53,7 @@ class TopStoryFragment : Fragment() {
         // favorite story stuff
         val dao : AndroidCaseDao? = context?.let { AndroidCaseDatabase.getInstance(it).androidCaseDao }
         lifecycleScope.launch {
+            Log.e("TAG-launch", "onViewCreated: "+dao?.getAll() )
             val favoriteStory = dao?.getAll()?.size
             binding.tvMoreFavorite.text = "$favoriteStory more"
         }

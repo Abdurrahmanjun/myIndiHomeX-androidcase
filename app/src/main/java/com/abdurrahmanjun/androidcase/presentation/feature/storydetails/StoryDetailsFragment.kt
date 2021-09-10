@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
+import com.abdurrahmanjun.androidcase.data.database.AndroidCaseDao
+import com.abdurrahmanjun.androidcase.data.database.AndroidCaseDatabase
+import com.abdurrahmanjun.androidcase.data.database.model.Favorite
 import com.abdurrahmanjun.androidcase.data.story.repository.source.network.result.StoryDetailsCommentResult
 import com.abdurrahmanjun.androidcase.data.story.repository.source.network.result.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryDetailsBinding
@@ -24,6 +28,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import java.lang.String
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,6 +37,7 @@ class StoryDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentStoryDetailsBinding
     private lateinit var adapter: CommentAdapter
+    private lateinit var dao: AndroidCaseDao
 
     private var flagFav : Boolean = false
     private val viewModel: StoryDetailsViewModel by viewModels()
@@ -58,6 +64,17 @@ class StoryDetailsFragment : Fragment() {
 
         if (arguments != null) {
             storyId = arguments?.getInt(EXTRA_ID)!!
+        }
+
+        dao = context?.let { AndroidCaseDatabase.getInstance(it).androidCaseDao }!!
+        lifecycleScope.launch {
+            if (dao.loadId(storyId) != null) {
+                animateHeart(binding.productLoved, binding.productLovedIdle, true)
+                flagFav = true
+            } else {
+                animateHeart(binding.productLoved, binding.productLovedIdle, false)
+                flagFav = false
+            }
         }
 
         initRecyclerView()
@@ -143,9 +160,17 @@ class StoryDetailsFragment : Fragment() {
 
     fun favClicked(product_loved : ImageView, product_loved_no : ImageView) {
         if (!flagFav) {
+            lifecycleScope.launch {
+                dao.insertFavorite(Favorite(storyId,binding.tvTitleticket.text.toString()))
+            }
+
             animateHeart(product_loved, product_loved_no, true)
             flagFav = true
         } else {
+            lifecycleScope.launch {
+                dao.deleteByStoryId(storyId)
+            }
+
             animateHeart(product_loved, product_loved_no, false)
             flagFav = false
         }

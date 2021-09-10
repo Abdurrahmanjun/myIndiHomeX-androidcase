@@ -6,8 +6,10 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Favorite (
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "story_title") val storyTitle: String?,
-    @ColumnInfo(name = "story_id") val storyId: String?,
-)
+    @ColumnInfo(name = "story_id") val storyId: Int,
+){
+    constructor(storyId: Int, storyTitle: String) :
+            this(0, storyTitle, storyId)
+}
