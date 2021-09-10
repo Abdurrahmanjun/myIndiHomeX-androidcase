@@ -1,4 +1,4 @@
-package com.abdurrahmanjun.androidcase.data.topstory.repository.source.network.result
+package com.abdurrahmanjun.androidcase.data.story.repository.source.network.result
 
 import com.google.gson.annotations.SerializedName
 

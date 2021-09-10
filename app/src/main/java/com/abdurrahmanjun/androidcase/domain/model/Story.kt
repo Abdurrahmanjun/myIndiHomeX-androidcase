@@ -8,6 +8,7 @@ data class Story(
     var by: String = "",
     var descendantsisload: Boolean = false,
     var descendants: Int = 0,
+    var kids: List<Int>?,
     var id: Int = 0,
     var score: Int = 0,
     var time: Int = 0,

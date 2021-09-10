@@ -2,7 +2,7 @@ package com.abdurrahmanjun.androidcase.domain.interactor
 
 import android.util.Log
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
-import com.abdurrahmanjun.androidcase.data.topstory.repository.source.network.result.StoryDetailsResult
+import com.abdurrahmanjun.androidcase.data.story.repository.source.network.result.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.domain.model.Story
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,7 +17,7 @@ class GetTopStory {
 
     fun execute(): Observable<ArrayList<Story>>? {
         return ServiceGenerator.getRequestApi()
-            .getPosts()
+            .getStory()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { list ->
@@ -30,7 +30,7 @@ class GetTopStory {
         val listOfStory : ArrayList<Story> = arrayListOf<Story>()
         for (i in 0 until list.size) {
             listOfStory.add(
-                Story("", true,0, list[i], 0, 0,"", "", "")
+                Story("", true,0, arrayListOf(), list[i], 0, 0,"", "", "")
             )
         }
 
@@ -40,7 +40,7 @@ class GetTopStory {
     fun execute(story: Story): Observable<Story>? {
         return story.id?.let {
             ServiceGenerator.getRequestApi()
-                .getComments(it)
+                .getStoryDetails(it)
                 .subscribeOn(Schedulers.io())
                 .map { response ->
                     transformRawResponseIntoStory(response)
@@ -53,6 +53,7 @@ class GetTopStory {
         return Story(response.by,
             false,
             response.descendants,
+            response.kids,
             response.id,
             response.score,
             response.time,

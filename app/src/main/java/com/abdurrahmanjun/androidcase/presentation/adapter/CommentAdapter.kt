@@ -1,5 +1,7 @@
 package com.abdurrahmanjun.androidcase.presentation.adapter
 
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +21,7 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentAdapter.CommentHolder {
         val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_comment, null, false)
-        return CommentAdapter.CommentHolder(view)
+        return CommentHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -75,8 +77,13 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentHolder>() {
             } else {
                 showProgressBar(false)
                 date!!.text = getDate(comment.time.toLong(), "dd/MM/yyyy hh:mm:ss.SSS")
-                commentText!!.text = comment.text
-                numReply?.text = (String.valueOf(comment.kids.size)) + " Comments"
+                commentText!!.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Html.fromHtml(comment.text, Html.FROM_HTML_MODE_COMPACT)
+                } else {
+                    Html.fromHtml(comment.text)
+                }
+
+                numReply?.text = (comment.kids?.let { String.valueOf(it.size) }) + " Comments"
             }
 
             // on clicklistener to continue explore showing comment reply

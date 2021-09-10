@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
-import com.abdurrahmanjun.androidcase.data.topstory.repository.source.network.result.StoryDetailsResult
+import com.abdurrahmanjun.androidcase.data.story.repository.source.network.result.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.domain.model.Story
 import com.abdurrahmanjun.androidcase.presentation.adapter.StoryAdapter
 import io.reactivex.ObservableSource
@@ -47,7 +47,7 @@ class TopStoryFragment : Fragment() {
         Thread.sleep(4000)
 
         showProgressBar(true)
-        getPostsObservable()
+        getTopStoryObservable()
             ?.subscribeOn(Schedulers.io())
             ?.flatMap(Function<Int?, ObservableSource<Story?>?> {
                     post -> getCommentsObservable(post)
@@ -76,9 +76,9 @@ class TopStoryFragment : Fragment() {
         binding.rvStory.setAdapter(adapter)
     }
 
-    private fun getPostsObservable(): Observable<Int>? {
+    private fun getTopStoryObservable(): Observable<Int>? {
         return ServiceGenerator.getRequestApi()
-            .getPosts()
+            .getStory()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap(object : Function<List<Int>, ObservableSource<Int>> {
@@ -94,7 +94,7 @@ class TopStoryFragment : Fragment() {
     private fun getCommentsObservable(post: Int): Observable<Story> {
         return post.let {
             ServiceGenerator.getRequestApi()
-                .getComments(it)
+                .getStoryDetails(it)
                 .map(object : Function<StoryDetailsResult?, Story> {
                     override fun apply(t: StoryDetailsResult): Story {
                         val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
