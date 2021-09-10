@@ -16,7 +16,6 @@ class DashboardActivity : AppCompatActivity() {
         val fragment = mFragmentManager.findFragmentByTag(TopStoryFragment::class.java.simpleName)
 
         if (fragment !is TopStoryFragment) {
-            Log.d("MyFlexibleFragment", "Fragment Name :" + TopStoryFragment::class.java.simpleName)
             mFragmentManager
                 .beginTransaction()
                 .add(R.id.frame_container, mTopStoryFragment, TopStoryFragment::class.java.simpleName)
