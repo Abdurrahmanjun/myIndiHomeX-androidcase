@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryDetailsBinding
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryListBinding
@@ -32,10 +33,22 @@ class StoryDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initRecyclerView()
+        Thread.sleep(4000)
+
+        showProgressBar(true)
+
         binding.rlHeart.setOnClickListener { v: View? ->
             favClicked(binding.productLoved,binding.productLovedIdle)
         }
     }
+
+    private fun initRecyclerView() {
+        adapter = CommentAdapter()
+        binding.rvComment.setLayoutManager(LinearLayoutManager(context))
+        binding.rvComment.setAdapter(adapter)
+    }
+
     fun favClicked(product_loved : ImageView, product_loved_no : ImageView) {
         if (!flagFav) {
             animateHeart(product_loved, product_loved_no, true)

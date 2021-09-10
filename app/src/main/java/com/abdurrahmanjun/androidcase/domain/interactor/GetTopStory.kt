@@ -11,6 +11,10 @@ import kotlin.collections.ArrayList
 
 class GetTopStory {
 
+    // execute - list of top story
+    // execute - comments every item list top story
+    // execute - get favorite headline
+
     fun execute(): Observable<ArrayList<Story>>? {
         return ServiceGenerator.getRequestApi()
             .getPosts()

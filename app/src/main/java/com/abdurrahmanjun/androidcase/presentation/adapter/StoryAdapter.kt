@@ -91,8 +91,6 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
             }
 
             itemView.setOnClickListener {
-                Toast.makeText(itemView.context, "${story.title}", Toast.LENGTH_SHORT).show()
-
                 val mStoryDetailsFragment = StoryDetailsFragment()
                 val mFragmentManager = (itemView.context as AppCompatActivity).supportFragmentManager
                 mFragmentManager.beginTransaction().apply {

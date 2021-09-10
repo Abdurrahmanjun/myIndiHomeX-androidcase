@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 class Comment(
     var by: String,
     var id: Int,
+    var commentisload: Boolean = false,
     var kids: List<Int>,
     var parent: Int,
     var text: String,
