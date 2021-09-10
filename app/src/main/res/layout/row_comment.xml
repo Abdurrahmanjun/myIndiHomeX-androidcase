@@ -4,7 +4,6 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardCornerRadius="10dp"
     card_view:cardBackgroundColor="@color/white"
     card_view:cardElevation="5dp"
     card_view:cardUseCompatPadding="true">
@@ -30,8 +29,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:text=""
-                android:textSize="@dimen/fontsize12sp" />
+                android:text="nickb"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/tv_date"
@@ -43,77 +43,26 @@
 
         </LinearLayout>
 
-        <View
-            android:id="@+id/div_header"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/md_grey_300"
-            android:layout_marginTop="@dimen/margin_16dp"
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/comment_dummy"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_8dp"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toBottomOf="@id/ll_header"/>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_content"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_16dp"
-            card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@id/div_header">
-
-            <LinearLayout
-                android:id="@+id/ll_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                card_view:layout_constraintBottom_toBottomOf="parent"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintStart_toStartOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_titleticket"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/fontsize20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_url"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/md_grey_300"
-                    android:textSize="@dimen/fontsize12sp" />
-
-            </LinearLayout>
-
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_centerInParent="true"
-                android:indeterminate="true"
-                android:indeterminateDrawable="@drawable/progress"
-                android:visibility="visible"
-                card_view:layout_constraintBottom_toBottomOf="@+id/ll_content"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintStart_toStartOf="@+id/ll_content"
-                card_view:layout_constraintTop_toTopOf="@+id/ll_content" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/div_bottom"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/margin_16dp"
-            android:background="@color/md_grey_300"
+            android:background="@android:color/darker_gray"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@id/cl_content" />
+            card_view:layout_constraintTop_toBottomOf="@id/tv_comment" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -126,10 +75,11 @@
             card_view:layout_constraintTop_toBottomOf="@id/div_bottom">
 
             <TextView
-                android:id="@+id/tv_comment"
+                android:id="@+id/tv_comment_replied"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
+                android:text="3 reply"
                 android:textColor="@color/cardview_dark_background"
                 android:textSize="@dimen/fontsize12sp" />
 

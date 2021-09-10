@@ -6,4 +6,7 @@
     <!-- story list -->
     <string name="favorite_stories">Your Favorite Stories :</string>
     <string name="list_stories">Stories :</string>
+
+    <!-- comment list -->
+    <string name="comment_dummy">The only problem is that you have to install something. See, it\'s not the same as USB drive. Most corporate laptops are locked and you can\'t install anything on them. Thats gonna be the problem. Also, another point where your USB comparison fails is that USB works in places where you don\'t have internet access. My suggestion is to drop the \"Throw away your USB drive\" tag line and use something else... it will just muddy your vision. Kudos for launching it!!! Launching/shipping is extremely hard and you pulled it off! Super!</string>
 </resources>

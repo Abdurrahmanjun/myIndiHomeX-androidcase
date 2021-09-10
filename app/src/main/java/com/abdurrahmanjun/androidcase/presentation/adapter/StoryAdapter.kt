@@ -5,13 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.domain.model.Story
+import com.abdurrahmanjun.androidcase.presentation.feature.storydetails.StoryDetailsFragment
 import java.lang.String
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import androidx.appcompat.app.AppCompatActivity
+
+
+
 
 class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
 
@@ -82,6 +88,18 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
                 title!!.text = story.title
                 url!!.text = story.url
                 numComments?.text = (String.valueOf(story.descendants)) + " Comments"
+            }
+
+            itemView.setOnClickListener {
+                Toast.makeText(itemView.context, "${story.title}", Toast.LENGTH_SHORT).show()
+
+                val mStoryDetailsFragment = StoryDetailsFragment()
+                val mFragmentManager = (itemView.context as AppCompatActivity).supportFragmentManager
+                mFragmentManager.beginTransaction().apply {
+                    replace(R.id.frame_container, mStoryDetailsFragment, StoryDetailsFragment::class.java.simpleName)
+                    addToBackStack(null)
+                    commit()
+                }
             }
         }
 
