@@ -8,12 +8,15 @@ import androidx.fragment.app.viewModels
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryListBinding
 import android.view.ViewGroup
 import android.view.LayoutInflater
+import androidx.lifecycle.lifecycleScope
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
+import com.abdurrahmanjun.androidcase.data.database.AndroidCaseDao
+import com.abdurrahmanjun.androidcase.data.database.AndroidCaseDatabase
 import com.abdurrahmanjun.androidcase.data.story.repository.source.network.result.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.domain.model.Story
 import com.abdurrahmanjun.androidcase.presentation.adapter.StoryAdapter
@@ -22,6 +25,7 @@ import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
+import kotlinx.coroutines.launch
 
 class TopStoryFragment : Fragment() {
 
@@ -46,6 +50,14 @@ class TopStoryFragment : Fragment() {
         initRecyclerView()
         Thread.sleep(4000)
 
+        // favorite story stuff
+        val dao : AndroidCaseDao? = context?.let { AndroidCaseDatabase.getInstance(it).androidCaseDao }
+        lifecycleScope.launch {
+            val favoriteStory = dao?.getAll()?.size
+            binding.tvMoreFavorite.text = "$favoriteStory more"
+        }
+
+        // top story stuff
         showProgressBar(true)
         getTopStoryObservable()
             ?.subscribeOn(Schedulers.io())
