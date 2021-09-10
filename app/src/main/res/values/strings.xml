@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Android Case - myIndiHomeX</string>
+    <string name="hello_home_fragment">hello from fragments</string>
+    <string name="story_details">Story Details</string>
+
+    <!-- story list -->
+    <string name="favorite_stories">Your Favorite Stories :</string>
+    <string name="list_stories">Stories :</string>
+</resources>
