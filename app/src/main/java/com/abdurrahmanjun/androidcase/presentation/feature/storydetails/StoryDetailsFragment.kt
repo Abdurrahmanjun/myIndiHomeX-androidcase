@@ -37,6 +37,12 @@ class StoryDetailsFragment : Fragment() {
     private val viewModel: StoryDetailsViewModel by viewModels()
     private val disposables = CompositeDisposable()
 
+    private var storyId: Int = 0
+
+    companion object {
+        var EXTRA_ID = "extra_id"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,6 +56,10 @@ class StoryDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (arguments != null) {
+            storyId = arguments?.getInt(EXTRA_ID)!!
+        }
+
         initRecyclerView()
         Thread.sleep(4000)
 
@@ -58,7 +68,7 @@ class StoryDetailsFragment : Fragment() {
             favClicked(binding.productLoved,binding.productLovedIdle)
         }
 
-        getDetailsStoryObservable(8863)
+        getDetailsStoryObservable(storyId)
             ?.subscribeOn(Schedulers.io())
             ?.flatMap {
                     commentId -> getCommentsDetailsObservable(commentId)

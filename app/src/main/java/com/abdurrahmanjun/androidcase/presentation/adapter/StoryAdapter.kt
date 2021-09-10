@@ -1,5 +1,6 @@
 package com.abdurrahmanjun.androidcase.presentation.adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,6 +94,11 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
             itemView.setOnClickListener {
                 val mStoryDetailsFragment = StoryDetailsFragment()
                 val mFragmentManager = (itemView.context as AppCompatActivity).supportFragmentManager
+
+                val mBundle = Bundle()
+                mBundle.putInt(StoryDetailsFragment.EXTRA_ID, story.id)
+                mStoryDetailsFragment.arguments = mBundle
+
                 mFragmentManager.beginTransaction().apply {
                     replace(R.id.frame_container, mStoryDetailsFragment, StoryDetailsFragment::class.java.simpleName)
                     addToBackStack(null)

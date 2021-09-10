@@ -83,7 +83,12 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentHolder>() {
                     Html.fromHtml(comment.text)
                 }
 
-                numReply?.text = (comment.kids?.let { String.valueOf(it.size) }) + " Comments"
+                numReply?.text = "0 Comments"
+                comment.kids?.let {
+                    if (it.size > 0) {
+                        numReply?.text = String.valueOf(it.size) + " Comments"
+                    }
+                }
             }
 
             // on clicklistener to continue explore showing comment reply
