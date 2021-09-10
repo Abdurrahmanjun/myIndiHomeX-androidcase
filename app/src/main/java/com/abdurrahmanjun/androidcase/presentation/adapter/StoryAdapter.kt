@@ -69,7 +69,7 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
         }
 
         fun bind(story: Story) {
-
+            id!!.text = "ID : " + story.id
             if (story.descendantsisload == true) {
                 showProgressBar(true)
                 date!!.text = ""
@@ -78,7 +78,6 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
                 numComments!!.text = ""
             } else {
                 showProgressBar(false)
-                id!!.text = "ID : " + story.id
                 date!!.text = getDate(story.time.toLong(), "dd/MM/yyyy hh:mm:ss.SSS")
                 title!!.text = story.title
                 url!!.text = story.url

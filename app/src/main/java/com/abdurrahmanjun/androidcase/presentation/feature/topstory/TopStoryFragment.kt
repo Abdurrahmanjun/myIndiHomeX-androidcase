@@ -15,7 +15,6 @@ import java.util.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.abdurrahmanjun.androidcase.data.ServiceGenerator
 import com.abdurrahmanjun.androidcase.data.topstory.repository.source.network.result.StoryDetailsResult
-
 import com.abdurrahmanjun.androidcase.domain.model.Story
 import com.abdurrahmanjun.androidcase.presentation.adapter.StoryAdapter
 import io.reactivex.ObservableSource
@@ -23,7 +22,6 @@ import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
-
 
 class TopStoryFragment : Fragment() {
 
@@ -46,8 +44,9 @@ class TopStoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
-        //subscribeObservers()
+        Thread.sleep(4000)
 
+        showProgressBar(true)
         getPostsObservable()
             ?.subscribeOn(Schedulers.io())
             ?.flatMap(Function<Int?, ObservableSource<Story?>?> {
@@ -77,7 +76,6 @@ class TopStoryFragment : Fragment() {
         binding.rvStory.setAdapter(adapter)
     }
 
-
     private fun getPostsObservable(): Observable<Int>? {
         return ServiceGenerator.getRequestApi()
             .getPosts()
@@ -85,6 +83,7 @@ class TopStoryFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap(object : Function<List<Int>, ObservableSource<Int>> {
                 override fun apply(t: List<Int>): ObservableSource<Int> {
+                    showProgressBar(false)
                     adapter.notifyStoriesValueChange(viewModel.getTopStory.transformArrayIntegerIntoPost(t))
                     return Observable.fromIterable(t)
                         .subscribeOn(Schedulers.io())
@@ -99,17 +98,13 @@ class TopStoryFragment : Fragment() {
                 .map(object : Function<StoryDetailsResult?, Story> {
                     override fun apply(t: StoryDetailsResult): Story {
                         val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
-
                         Thread.sleep(delay.toLong())
-                        Log.d("TAG", "apply: sleeping thread " + Thread.currentThread().name + " for " + delay.toString() + "ms")
-
                         return viewModel.getTopStory.transformRawResponseIntoStory(t)
                     }
                 })
                 .subscribeOn(Schedulers.io())
         }
     }
-
 
 //
 //    private fun subscribeObservers(){
@@ -142,6 +137,14 @@ class TopStoryFragment : Fragment() {
 
     private fun updateStory(story: Story?) {
         adapter.updateStory(story)
+    }
+
+    private fun showProgressBar(showProgressBar: Boolean) {
+        if (showProgressBar) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
     }
 
 }
