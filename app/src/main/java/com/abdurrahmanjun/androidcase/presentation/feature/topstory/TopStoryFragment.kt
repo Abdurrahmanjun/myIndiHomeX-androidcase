@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryListBinding
 import android.view.ViewGroup
 import android.view.LayoutInflater
+import android.view.View.GONE
 import androidx.lifecycle.lifecycleScope
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -51,12 +52,7 @@ class TopStoryFragment : Fragment() {
         Thread.sleep(4000)
 
         // favorite story stuff
-        val dao : AndroidCaseDao? = context?.let { AndroidCaseDatabase.getInstance(it).androidCaseDao }
-        lifecycleScope.launch {
-            Log.e("TAG-launch", "onViewCreated: "+dao?.getAll() )
-            val favoriteStory = dao?.getAll()?.size
-            binding.tvMoreFavorite.text = "$favoriteStory more"
-        }
+        populateFavoriteStory()
 
         // top story stuff
         showProgressBar(true)
@@ -81,6 +77,27 @@ class TopStoryFragment : Fragment() {
 
                 override fun onComplete() {}
             })
+    }
+
+    private fun populateFavoriteStory() {
+        val dao : AndroidCaseDao? = context?.let { AndroidCaseDatabase.getInstance(it).androidCaseDao }
+        lifecycleScope.launch {
+            Log.e("TAG-launch", "onViewCreated: "+dao?.getAll() )
+            val favoriteStory = dao?.getAll()
+
+            when (favoriteStory?.size) {
+                0 -> hideOthersCard("You havent choose any favorite story")
+                1 -> hideOthersCard(favoriteStory.get(0).storyTitle.toString())
+                else -> { // Note the block
+                    binding.tvMoreFavorite.text = "${favoriteStory?.size?.minus(1)} more"
+                }
+            }
+        }
+    }
+
+    private fun hideOthersCard(s: String) {
+        binding.cvOthersFav.visibility = GONE
+        binding.tvFavorite.text = s
     }
 
     private fun initRecyclerView() {

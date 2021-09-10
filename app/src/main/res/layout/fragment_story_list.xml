@@ -24,6 +24,7 @@
         android:layout_marginRight="@dimen/margin_8dp">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cv_fav"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:layout_height="wrap_content"
@@ -39,7 +40,7 @@
                 android:layout_margin="@dimen/margin_16dp">
 
                 <TextView
-                    android:id="@+id/tv_titleticket"
+                    android:id="@+id/tv_favorite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Paid influencers must label posts as ads, German court rules"
@@ -52,6 +53,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cv_others_fav"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"

@@ -18,8 +18,6 @@ import com.abdurrahmanjun.androidcase.data.story.repository.source.network.resul
 import com.abdurrahmanjun.androidcase.data.story.repository.source.network.result.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryDetailsBinding
 import com.abdurrahmanjun.androidcase.domain.model.Comment
-import com.abdurrahmanjun.androidcase.domain.model.DetailsStory
-import com.abdurrahmanjun.androidcase.domain.model.Story
 import com.abdurrahmanjun.androidcase.presentation.adapter.CommentAdapter
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
