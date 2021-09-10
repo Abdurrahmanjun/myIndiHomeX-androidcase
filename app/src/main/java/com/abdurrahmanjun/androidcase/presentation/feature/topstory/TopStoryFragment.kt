@@ -106,7 +106,6 @@ class TopStoryFragment : Fragment() {
         }
     }
 
-//
 //    private fun subscribeObservers(){
 //        viewModel.getTopStory.execute()
 //            ?.flatMap { it ->
