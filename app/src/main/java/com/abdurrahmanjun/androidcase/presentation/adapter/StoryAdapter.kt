@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.domain.model.Story
 import java.lang.String
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
 
@@ -30,7 +33,6 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
 
     fun notifyStoriesValueChange(value: ArrayList<Story>) {
         this.stories = value
-//        this.storyIds = storyIds
         notifyDataSetChanged()
     }
 
@@ -50,33 +52,57 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
 
     class StoryHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        var id: TextView? = null
+        var date: TextView? = null
         var title: TextView? = null
+        var url: TextView? = null
         var numComments:TextView? = null
+        var progressBar: ProgressBar? = null
 
         init {
-            title = itemView.findViewById(R.id.title)
+            id = itemView.findViewById(R.id.tv_id)
+            date = itemView.findViewById(R.id.tv_date)
+            title = itemView.findViewById(R.id.tv_titleticket)
+            url = itemView.findViewById(R.id.tv_url)
             numComments = itemView.findViewById(R.id.tv_comment)
+            progressBar = itemView.findViewById(R.id.progress_bar)
         }
 
         fun bind(story: Story) {
 
-            title?.setText(story.title)
             if (story.descendantsisload == true) {
-//                showProgressBar(true)
+                showProgressBar(true)
+                date!!.text = ""
+                title!!.text = ""
+                url!!.text = ""
                 numComments!!.text = ""
             } else {
-//                showProgressBar(false)
+                showProgressBar(false)
+                id!!.text = "ID : " + story.id
+                date!!.text = getDate(story.time.toLong(), "dd/MM/yyyy hh:mm:ss.SSS")
+                title!!.text = story.title
+                url!!.text = story.url
                 numComments?.text = (String.valueOf(story.descendants)) + " Comments"
             }
         }
 
-//        private fun showProgressBar(showProgressBar: Boolean) {
-//            if (showProgressBar) {
-//                progressBar!!.visibility = View.VISIBLE
-//            } else {
-//                progressBar!!.visibility = View.GONE
-//            }
-//        }
+        private fun showProgressBar(showProgressBar: Boolean) {
+            if (showProgressBar) {
+                progressBar!!.visibility = View.VISIBLE
+            } else {
+                progressBar!!.visibility = View.GONE
+            }
+        }
+
+        fun getDate(milliSeconds: Long, dateFormat: kotlin.String?): kotlin.String? {
+            // Create a DateFormatter object for displaying date in specified format.
+            val formatter = SimpleDateFormat(dateFormat)
+
+            // Create a calendar object that will convert the date and time value in milliseconds to date.
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.setTimeInMillis(milliSeconds)
+            return formatter.format(calendar.getTime())
+        }
 
     }
 

@@ -8,7 +8,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22395833333333334" />
         <entry key="app/src/main/res/layout/fragment_story_details.xml" value="0.23435897435897435" />
         <entry key="app/src/main/res/layout/fragment_story_list.xml" value="0.23435897435897435" />
-        <entry key="app/src/main/res/layout/row_story.xml" value="0.23507213164891216" />
+        <entry key="app/src/main/res/layout/row_story.xml" value="0.25" />
       </map>
     </option>
   </component>

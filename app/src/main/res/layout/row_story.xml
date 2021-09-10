@@ -9,93 +9,136 @@
     card_view:cardElevation="5dp"
     card_view:cardUseCompatPadding="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/margin_16dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/ll_header"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/tv_id"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="left"
                 android:text="id : 28472003"
-                android:gravity="center_vertical"
-                android:textSize="@dimen/fontsize12sp"/>
+                android:textSize="@dimen/fontsize12sp" />
 
             <TextView
+                android:id="@+id/tv_date"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_gravity="right"
+                android:gravity="right"
                 android:text="Mon Jan 19 1970 21:06:38"
-                android:gravity="center_vertical"
-                android:textSize="@dimen/fontsize12sp"/>
+                android:textSize="@dimen/fontsize12sp" />
 
         </LinearLayout>
 
         <View
+            android:id="@+id/div_header"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/md_grey_300"
             android:layout_marginTop="@dimen/margin_16dp"
-            android:layout_marginBottom="@dimen/margin_16dp"/>
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@id/ll_header"/>
 
-        <LinearLayout
-            android:visibility="visible"
-            android:id="@+id/ll_content"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/margin_16dp"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@id/div_header">
 
-            <TextView
-                android:id="@+id/tv_titleticket"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/ll_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Paid influencers must label posts as ads, German court rules"
-                android:textSize="@dimen/fontsize20sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:orientation="vertical"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_evActivity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/fontsize12sp"
-                android:text="https://www.reuters.com/technology/paid-influencers-must-label-posts-ads-german-court-rules-2021-09-09/"
-                android:textColor="@color/md_grey_300" />
+                <TextView
+                    android:id="@+id/tv_titleticket"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Paid influencers must"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/fontsize20sp"
+                    android:textStyle="bold" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="https://www.reuters.com/technology/paid-influencers-must-label-posts-ads-german-court-rules-2021-09-09/"
+                    android:textColor="@color/md_grey_300"
+                    android:textSize="@dimen/fontsize12sp" />
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                android:indeterminateDrawable="@drawable/progress"
+                android:visibility="visible"
+                card_view:layout_constraintBottom_toBottomOf="@+id/ll_content"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="@+id/ll_content"
+                card_view:layout_constraintTop_toTopOf="@+id/ll_content" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
-            android:layout_width="match_parent"
+            android:id="@+id/div_bottom"
+            android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/md_grey_300"
             android:layout_marginTop="@dimen/margin_16dp"
-            android:layout_marginBottom="@dimen/margin_16dp"/>
+            android:background="@color/md_grey_300"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@id/cl_content" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginTop="@dimen/margin_16dp"
+            android:orientation="horizontal"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@id/div_bottom">
 
             <TextView
                 android:id="@+id/tv_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="9 Comments"
                 android:gravity="right"
+                android:text="9 Comments"
                 android:textColor="@color/cardview_dark_background"
-                android:textSize="@dimen/fontsize12sp"/>
+                android:textSize="@dimen/fontsize12sp" />
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

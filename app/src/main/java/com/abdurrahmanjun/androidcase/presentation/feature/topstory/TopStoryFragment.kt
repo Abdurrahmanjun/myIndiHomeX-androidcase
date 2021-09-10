@@ -98,6 +98,11 @@ class TopStoryFragment : Fragment() {
                 .getComments(it)
                 .map(object : Function<StoryDetailsResult?, Story> {
                     override fun apply(t: StoryDetailsResult): Story {
+                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
+
+                        Thread.sleep(delay.toLong())
+                        Log.d("TAG", "apply: sleeping thread " + Thread.currentThread().name + " for " + delay.toString() + "ms")
+
                         return viewModel.getTopStory.transformRawResponseIntoStory(t)
                     }
                 })
