@@ -25,7 +25,7 @@ class StoryDetailsViewModel (application: Application) :AndroidViewModel(applica
     var storyId: Int = 0
     val disposables = CompositeDisposable()
     val getStoryDetails: GetStoryDetails = GetStoryDetails()
-    
+
     // boolean favorite
     private var _booleanFavoriteDataState: MutableLiveData<Boolean> = MutableLiveData()
     val booleanFavoriteDataState: LiveData<Boolean>

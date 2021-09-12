@@ -9,7 +9,7 @@ interface FavoriteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(favorite: Favorite)
 
-    @Query("SELECT * FROM favorite")
+    @Query("SELECT * FROM favorite order by id DESC")
     suspend fun getAll(): List<Favorite>
 
     @Query("SELECT * FROM favorite WHERE story_id = :story_id")

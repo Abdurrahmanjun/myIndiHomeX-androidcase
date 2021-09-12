@@ -9,7 +9,10 @@ import com.abdurrahmanjun.androidcase.databinding.FragmentStoryListBinding
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View.GONE
+import android.view.View.VISIBLE
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -19,21 +22,31 @@ import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.business.datasource.network.ServiceGenerator
 import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.FavoriteDao
 import com.abdurrahmanjun.androidcase.business.datasource.cache.AndroidCaseDatabase
+import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.Favorite
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.business.domain.models.Story
+import com.abdurrahmanjun.androidcase.presentation.storydetails.StoryDetailsViewModel
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class TopStoryFragment : Fragment() {
 
     private lateinit var binding: FragmentStoryListBinding
     private lateinit var adapter: StoryAdapter
-    private val viewModel: TopStoryViewModel by viewModels()
-    private val disposables = CompositeDisposable()
+    private lateinit var viewModel: TopStoryViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(this.requireActivity().application)
+        ).get(TopStoryViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,22 +62,39 @@ class TopStoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
-        Thread.sleep(4000)
-
-        // favorite story stuff
-        populateFavoriteStory()
+        viewModel.populateFavoriteStory()
+        viewModel.listFavoriteDataState.observe(viewLifecycleOwner, { favoriteStories ->
+            Log.d("FavoriteStoriesView", favoriteStories.toString())
+            Log.d("FavoriteStoriesView", favoriteStories.size.toString())
+            when (favoriteStories.size) {
+                0 -> hideOthersCard("You haven't chosen any favorite stories yet",true)
+                1 -> hideOthersCard(favoriteStories.get(0).storyTitle.toString(),false)
+                else -> { // Note the block
+                    binding.tvFavorite.text = favoriteStories.get(0).storyTitle.toString()
+                    binding.cvOthersFav.visibility = VISIBLE
+                    binding.tvMoreFavorite.text = "${favoriteStories?.size?.minus(1)} more"
+                }
+            }
+        })
 
         // top story stuff
-        showProgressBar(true)
-        getTopStoryObservable()
+        binding.progressBar.visibility = View.VISIBLE
+        Thread.sleep(4000)
+        viewModel.getTopStoryObservable()
             ?.subscribeOn(Schedulers.io())
-            ?.flatMap(Function<Int?, ObservableSource<Story?>?> {
-                    post -> getCommentsObservable(post)
+            ?.flatMap(object : Function<List<Int>, ObservableSource<Int>> {
+                override fun apply(t: List<Int>): ObservableSource<Int> {
+                    binding.progressBar.visibility = View.GONE
+                    adapter.notifyStoriesValueChange(viewModel.getTopStory.transformArrayIntegerIntoPost(t))
+                    return Observable.fromIterable(t)
+                        .subscribeOn(Schedulers.io())
+                }
             })
+            ?.flatMap({viewModel.getCommentsObservable(it)})
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe(object : Observer<Story?> {
                 override fun onSubscribe(d: Disposable) {
-                    disposables.add(d)
+                    viewModel.disposables.add(d)
                 }
 
                 override fun onNext(t: Story) {
@@ -77,23 +107,6 @@ class TopStoryFragment : Fragment() {
 
                 override fun onComplete() {}
             })
-    }
-
-    private fun populateFavoriteStory() {
-        val dao : FavoriteDao? = context?.let { AndroidCaseDatabase.getInstance(it).favoriteDao }
-        lifecycleScope.launch {
-            Log.e("TAG-launch", "onViewCreated: "+dao?.getAll() )
-            val favoriteStory = dao?.getAll()
-
-            when (favoriteStory?.size) {
-                0 -> hideOthersCard("You haven't chosen any favorite stories yet",true)
-                1 -> hideOthersCard(favoriteStory.get(0).storyTitle.toString(),false)
-                else -> { // Note the block
-                    binding.tvFavorite.text = favoriteStory?.get(0)?.storyTitle.toString()
-                    binding.tvMoreFavorite.text = "${favoriteStory?.size?.minus(1)} more"
-                }
-            }
-        }
     }
 
     private fun hideOthersCard(s: String,applySecondary : Boolean) {
@@ -110,74 +123,8 @@ class TopStoryFragment : Fragment() {
         binding.rvStory.setAdapter(adapter)
     }
 
-    private fun getTopStoryObservable(): Observable<Int>? {
-        return ServiceGenerator.getRequestApi()
-            .getStory()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMap(object : Function<List<Int>, ObservableSource<Int>> {
-                override fun apply(t: List<Int>): ObservableSource<Int> {
-                    showProgressBar(false)
-                    adapter.notifyStoriesValueChange(viewModel.getTopStory.transformArrayIntegerIntoPost(t))
-                    return Observable.fromIterable(t)
-                        .subscribeOn(Schedulers.io())
-                }
-            })
-    }
-
-    private fun getCommentsObservable(post: Int): Observable<Story> {
-        return post.let {
-            ServiceGenerator.getRequestApi()
-                .getStoryDetails(it)
-                .map(object : Function<StoryDetailsResult?, Story> {
-                    override fun apply(t: StoryDetailsResult): Story {
-                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
-                        Thread.sleep(delay.toLong())
-                        return viewModel.getTopStory.transformRawResponseIntoStory(t)
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-        }
-    }
-
-//    private fun subscribeObservers(){
-//        viewModel.getTopStory.execute()
-//            ?.flatMap { it ->
-//                adapter.notifyStoriesValueChange(it)
-//                Observable.fromIterable(it).subscribeOn(Schedulers.io())
-//            }
-//            ?.subscribeOn(Schedulers.io())
-//            ?.flatMap{ it ->
-//                viewModel.getTopStory.execute(it)
-//            }
-//            ?.observeOn(AndroidSchedulers.mainThread())
-//            ?.subscribe(object : Observer<Story> {
-//                override fun onSubscribe(d: Disposable) {
-//                    disposables.add(d)
-//                }
-//
-//                override fun onNext(t: Story) {
-//                    updateStory(t)
-//                }
-//
-//                override fun onError(e: Throwable) {
-//                    Log.e("TAG", "onError: ", e)
-//                }
-//
-//                override fun onComplete() {}
-//            })
-//    }
-
     private fun updateStory(story: Story?) {
         adapter.updateStory(story)
-    }
-
-    private fun showProgressBar(showProgressBar: Boolean) {
-        if (showProgressBar) {
-            binding.progressBar.visibility = View.VISIBLE
-        } else {
-            binding.progressBar.visibility = View.GONE
-        }
     }
 
 }
