@@ -18,6 +18,7 @@ import com.abdurrahmanjun.androidcase.business.datasource.network.story.response
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryDetailsBinding
 import com.abdurrahmanjun.androidcase.business.domain.models.Comment
+import com.abdurrahmanjun.androidcase.presentation.utils.ViewUtils.Companion.getDate
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
@@ -77,7 +78,7 @@ class StoryDetailsFragment : Fragment() {
         initRecyclerView()
         Thread.sleep(4000)
 
-        showProgressBar(true)
+        binding.progressBar.visibility = View.VISIBLE
         binding.rlHeart.setOnClickListener { v: View? ->
             favClicked(binding.productLoved,binding.productLovedIdle)
         }
@@ -116,7 +117,7 @@ class StoryDetailsFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap(object : io.reactivex.functions.Function<StoryDetailsResult, ObservableSource<Int>> {
                 override fun apply(t: StoryDetailsResult): ObservableSource<Int> {
-                    showProgressBar(false)
+                    binding.progressBar.visibility = View.GONE
                     updateFragmentView(t)
 
                     adapter.notifyCommentsValueChange(viewModel.getStoryDetails.transformArrayIntegerIntoComment(t.kids))
@@ -176,23 +177,5 @@ class StoryDetailsFragment : Fragment() {
     fun animateHeart(imageLovedOn: ImageView, imageLovedOff: ImageView, on: Boolean) {
         imageLovedOff.animate().scaleX(if (on) 0.toFloat() else 1.toFloat()).scaleY(if (on) 0.toFloat() else 1.toFloat()).alpha(if (on) 0.toFloat() else 1.toFloat())
         imageLovedOn.animate().scaleX(if (on) 1.toFloat() else 0.toFloat()).scaleY(if (on) 1.toFloat() else 0.toFloat()).alpha(if (on) 1.toFloat() else 0.toFloat())
-    }
-
-    private fun showProgressBar(showProgressBar: Boolean) {
-        if (showProgressBar) {
-            binding.progressBar.visibility = View.VISIBLE
-        } else {
-            binding.progressBar.visibility = View.GONE
-        }
-    }
-
-    fun getDate(milliSeconds: Long, dateFormat: kotlin.String?): kotlin.String? {
-        // Create a DateFormatter object for displaying date in specified format.
-        val formatter = SimpleDateFormat(dateFormat)
-
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
-        val calendar: Calendar = Calendar.getInstance()
-        calendar.setTimeInMillis(milliSeconds)
-        return formatter.format(calendar.getTime())
     }
 }

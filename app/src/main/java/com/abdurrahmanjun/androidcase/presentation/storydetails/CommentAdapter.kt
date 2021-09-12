@@ -10,8 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.business.domain.models.Comment
-import java.lang.String
-import java.text.SimpleDateFormat
+import com.abdurrahmanjun.androidcase.presentation.utils.ViewUtils.Companion.getDate
 import java.util.*
 
 class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentHolder>() {
@@ -70,12 +69,12 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentHolder>() {
         fun bind(comment: Comment) {
             name!!.text = comment.by
             if (comment.commentisload == true) {
-                showProgressBar(true)
+                progressBar?.visibility = View.VISIBLE
                 date!!.text = ""
                 commentText!!.text = ""
                 numReply!!.text = ""
             } else {
-                showProgressBar(false)
+                progressBar?.visibility = View.GONE
                 date!!.text = getDate(comment.time.toLong(), "dd/MM/yyyy hh:mm:ss.SSS")
                 commentText!!.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Html.fromHtml(comment.text, Html.FROM_HTML_MODE_COMPACT)
@@ -86,31 +85,13 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentHolder>() {
                 numReply?.text = "0 Comments"
                 comment.kids?.let {
                     if (it.size > 0) {
-                        numReply?.text = String.valueOf(it.size) + " Comments"
+                        numReply?.text = "$it.size Comments"
                     }
                 }
             }
 
             // on clicklistener to continue explore showing comment reply
             itemView.setOnClickListener {}
-        }
-
-        private fun showProgressBar(showProgressBar: Boolean) {
-            if (showProgressBar) {
-                progressBar!!.visibility = View.VISIBLE
-            } else {
-                progressBar!!.visibility = View.GONE
-            }
-        }
-
-        fun getDate(milliSeconds: Long, dateFormat: kotlin.String?): kotlin.String? {
-            // Create a DateFormatter object for displaying date in specified format.
-            val formatter = SimpleDateFormat(dateFormat)
-
-            // Create a calendar object that will convert the date and time value in milliseconds to date.
-            val calendar: Calendar = Calendar.getInstance()
-            calendar.setTimeInMillis(milliSeconds)
-            return formatter.format(calendar.getTime())
         }
     }
 
