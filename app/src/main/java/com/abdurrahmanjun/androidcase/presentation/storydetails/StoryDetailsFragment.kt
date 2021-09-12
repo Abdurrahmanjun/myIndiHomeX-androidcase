@@ -35,13 +35,8 @@ class StoryDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentStoryDetailsBinding
     private lateinit var adapter: CommentAdapter
-    private lateinit var dao: FavoriteDao
 
-    private var flagFav : Boolean = false
     private val viewModel: StoryDetailsViewModel by viewModels()
-    private val disposables = CompositeDisposable()
-
-    private var storyId: Int = 0
 
     companion object {
         var EXTRA_ID = "extra_id"
@@ -60,8 +55,9 @@ class StoryDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initRecyclerView()
         if (arguments != null) {
-            storyId = arguments?.getInt(EXTRA_ID)!!
+            viewModel.storyId = arguments?.getInt(EXTRA_ID)!!
         }
 
         dao = context?.let { AndroidCaseDatabase.getInstance(it).favoriteDao }!!
@@ -75,9 +71,7 @@ class StoryDetailsFragment : Fragment() {
             }
         }
 
-        initRecyclerView()
         Thread.sleep(4000)
-
         binding.progressBar.visibility = View.VISIBLE
         binding.rlHeart.setOnClickListener { v: View? ->
             favClicked(binding.productLoved,binding.productLovedIdle)
