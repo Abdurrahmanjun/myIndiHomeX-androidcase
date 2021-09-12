@@ -10,6 +10,5 @@ data class Favorite (
     @ColumnInfo(name = "story_title") val storyTitle: String?,
     @ColumnInfo(name = "story_id") val storyId: Int,
 ){
-    constructor(storyId: Int, storyTitle: String) :
-            this(0, storyTitle, storyId)
+    constructor(storyId: Int, storyTitle: String) : this(0, storyTitle, storyId)
 }

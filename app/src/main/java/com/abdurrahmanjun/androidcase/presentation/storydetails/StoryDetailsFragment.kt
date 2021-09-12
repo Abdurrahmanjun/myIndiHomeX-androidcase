@@ -7,14 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.abdurrahmanjun.androidcase.business.datasource.network.ServiceGenerator
-import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.FavoriteDao
-import com.abdurrahmanjun.androidcase.business.datasource.cache.AndroidCaseDatabase
-import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.Favorite
-import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsCommentResult
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.databinding.FragmentStoryDetailsBinding
 import com.abdurrahmanjun.androidcase.business.domain.models.Comment
@@ -23,23 +17,25 @@ import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.launch
-import java.lang.String
-import java.text.SimpleDateFormat
-import java.util.*
 
 class StoryDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentStoryDetailsBinding
     private lateinit var adapter: CommentAdapter
-
-    private val viewModel: StoryDetailsViewModel by viewModels()
+    private lateinit var viewModel: StoryDetailsViewModel
 
     companion object {
         var EXTRA_ID = "extra_id"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(this.requireActivity().application)
+        ).get(StoryDetailsViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -48,8 +44,7 @@ class StoryDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentStoryDetailsBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,34 +53,36 @@ class StoryDetailsFragment : Fragment() {
         initRecyclerView()
         if (arguments != null) {
             viewModel.storyId = arguments?.getInt(EXTRA_ID)!!
+            viewModel.isFavorite()
         }
 
-        dao = context?.let { AndroidCaseDatabase.getInstance(it).favoriteDao }!!
-        lifecycleScope.launch {
-            if (dao.loadId(storyId) != null) {
-                animateHeart(binding.productLoved, binding.productLovedIdle, true)
-                flagFav = true
-            } else {
-                animateHeart(binding.productLoved, binding.productLovedIdle, false)
-                flagFav = false
-            }
-        }
+        viewModel.booleanFavoriteDataState.observe(viewLifecycleOwner, { bool ->
+            animateHeart(binding.productLoved, binding.productLovedIdle, bool)
+        })
 
         Thread.sleep(4000)
         binding.progressBar.visibility = View.VISIBLE
-        binding.rlHeart.setOnClickListener { v: View? ->
-            favClicked(binding.productLoved,binding.productLovedIdle)
+        binding.rlHeart.setOnClickListener {
+            viewModel.favoriteAction(binding.tvTitleticket.text.toString())
         }
 
-        getDetailsStoryObservable(storyId)
+        viewModel.getDetailsStoryObservable()
             ?.subscribeOn(Schedulers.io())
-            ?.flatMap {
-                    commentId -> getCommentsDetailsObservable(commentId)
-            }
+            ?.flatMap(object : io.reactivex.functions.Function<StoryDetailsResult, ObservableSource<Int>> {
+                override fun apply(t: StoryDetailsResult): ObservableSource<Int> {
+                    binding.progressBar.visibility = View.GONE
+                    updateFragmentView(t)
+                    adapter.notifyCommentsValueChange(viewModel.getStoryDetails.transformArrayIntegerIntoComment(t.kids))
+
+                    return Observable.fromIterable(t.kids)
+                        .subscribeOn(Schedulers.io())
+                }
+            })
+            ?.flatMap { commentId -> viewModel.getCommentsDetailsObservable(commentId) }
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe(object : Observer<Comment?> {
                 override fun onSubscribe(d: Disposable) {
-                    disposables.add(d)
+                    viewModel.disposables.add(d)
                 }
 
                 override fun onNext(t: Comment) {
@@ -104,68 +101,18 @@ class StoryDetailsFragment : Fragment() {
         adapter.updateComment(comment)
     }
 
-    private fun getDetailsStoryObservable(idStory : Int): Observable<Int>? {
-        return ServiceGenerator.getRequestApi()
-            .getStoryDetails(idStory)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMap(object : io.reactivex.functions.Function<StoryDetailsResult, ObservableSource<Int>> {
-                override fun apply(t: StoryDetailsResult): ObservableSource<Int> {
-                    binding.progressBar.visibility = View.GONE
-                    updateFragmentView(t)
-
-                    adapter.notifyCommentsValueChange(viewModel.getStoryDetails.transformArrayIntegerIntoComment(t.kids))
-                    return Observable.fromIterable(t.kids)
-                        .subscribeOn(Schedulers.io())
-                }
-            })
-    }
-
-    private fun getCommentsDetailsObservable(commentId: Int): Observable<Comment> {
-        return commentId.let {
-            ServiceGenerator.getRequestApi()
-                .getCommentsOnDetails(it)
-                .map(object : io.reactivex.functions.Function<StoryDetailsCommentResult?, Comment> {
-                    override fun apply(t: StoryDetailsCommentResult): Comment {
-                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
-                        Thread.sleep(delay.toLong())
-                        return viewModel.getStoryDetails.transformRawResponseIntoComment(t)
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-        }
-    }
-
     private fun updateFragmentView(detailsStory: StoryDetailsResult) {
         binding.tvId.text = "ID : " + detailsStory.id
         binding.tvDate.text = getDate(detailsStory.time.toLong(), "dd/MM/yyyy hh:mm:ss.SSS")
         binding.tvTitleticket.text = detailsStory.title
         binding.tvUrl.text = detailsStory.url
-        binding.tvComment.text = (String.valueOf(detailsStory.kids.size)) + " Comments"
+        binding.tvComment.text = "${detailsStory.kids.size} Comments"
     }
 
     private fun initRecyclerView() {
         adapter = CommentAdapter()
         binding.rvComment.setLayoutManager(LinearLayoutManager(context))
         binding.rvComment.setAdapter(adapter)
-    }
-
-    fun favClicked(product_loved : ImageView, product_loved_no : ImageView) {
-        if (!flagFav) {
-            lifecycleScope.launch {
-                dao.insertFavorite(Favorite(storyId,binding.tvTitleticket.text.toString()))
-            }
-
-            animateHeart(product_loved, product_loved_no, true)
-            flagFav = true
-        } else {
-            lifecycleScope.launch {
-                dao.deleteByStoryId(storyId)
-            }
-
-            animateHeart(product_loved, product_loved_no, false)
-            flagFav = false
-        }
     }
 
     fun animateHeart(imageLovedOn: ImageView, imageLovedOff: ImageView, on: Boolean) {

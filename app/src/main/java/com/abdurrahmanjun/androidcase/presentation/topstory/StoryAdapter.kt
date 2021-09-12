@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.abdurrahmanjun.androidcase.R
 import com.abdurrahmanjun.androidcase.business.domain.models.Story
 import com.abdurrahmanjun.androidcase.presentation.storydetails.StoryDetailsFragment
-import java.lang.String
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -87,7 +86,7 @@ class StoryAdapter : RecyclerView.Adapter<StoryAdapter.StoryHolder>() {
                 date!!.text = getDate(story.time.toLong(), "dd/MM/yyyy hh:mm:ss.SSS")
                 title!!.text = story.title
                 url!!.text = story.url
-                numComments?.text = (String.valueOf(story.descendants)) + " Comments"
+                numComments?.text = "${story.descendants} Comments"
             }
 
             itemView.setOnClickListener {

@@ -1,14 +1,14 @@
 package com.abdurrahmanjun.androidcase.business.datasource.cache.favorite
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface FavoriteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFavorite(favorite: Favorite)
+    suspend fun insert(favorite: Favorite)
 
-    @Transaction
     @Query("SELECT * FROM favorite")
     suspend fun getAll(): List<Favorite>
 

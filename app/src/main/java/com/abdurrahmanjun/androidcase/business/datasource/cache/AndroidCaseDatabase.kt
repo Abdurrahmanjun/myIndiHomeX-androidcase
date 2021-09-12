@@ -21,7 +21,7 @@ abstract class AndroidCaseDatabase: RoomDatabase() {
                 return INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AndroidCaseDatabase::class.java,
-                    "school_db"
+                    "androidcase"
                 ).build().also {
                     INSTANCE = it
                 }
