@@ -40,7 +40,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="left"
-                    android:text="ID : 8863"
                     android:textSize="@dimen/fontsize12sp" />
 
                 <TextView
@@ -49,7 +48,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:text="dd/MM/yyyy hh:mm:ss.SSS"
                     android:textSize="@dimen/fontsize12sp" />
 
             </LinearLayout>
@@ -88,7 +86,6 @@
                         android:id="@+id/tv_titleticket"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="My YC app: Dropbox - Throw away your USB drive"
                         android:textColor="@color/black"
                         android:textSize="@dimen/fontsize20sp"
                         android:textStyle="bold" />
@@ -98,7 +95,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/margin_8dp"
-                        android:text="http://www.getdropbox.com/u/2/screencast.html"
                         android:textColor="@color/md_grey_300"
                         android:textSize="@dimen/fontsize12sp" />
 
@@ -160,7 +156,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="right"
-                    android:text="9 Comments"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
