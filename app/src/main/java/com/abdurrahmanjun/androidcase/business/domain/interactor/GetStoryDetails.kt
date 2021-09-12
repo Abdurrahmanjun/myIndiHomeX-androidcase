@@ -8,16 +8,16 @@ import com.abdurrahmanjun.androidcase.business.domain.models.Comment
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.random.Random
 
 class GetStoryDetails {
 
     fun getDetailsStoryObservable(storyId : Int): Observable<StoryDetailsResult>? {
-        return ServiceGenerator.getRequestApi()
+        return ServiceGenerator.requestApi
             .getStoryDetails(storyId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
     }
 
     fun transformArrayIntegerIntoComment(list: List<Int>) : ArrayList<Comment> {
@@ -32,18 +32,18 @@ class GetStoryDetails {
         return listOfStory
     }
 
-    fun getCommentsDetailsObservable(commentId: Int): Observable<Comment> {
+    fun getCommentsDetailsObservable(commentId: Int): Observable<Comment>? {
         return commentId.let {
-            ServiceGenerator.getRequestApi()
+            ServiceGenerator.requestApi
                 .getCommentsOnDetails(it)
-                .map(object : io.reactivex.functions.Function<StoryDetailsCommentResult?, Comment> {
+                ?.map(object : io.reactivex.functions.Function<StoryDetailsCommentResult?, Comment> {
                     override fun apply(t: StoryDetailsCommentResult): Comment {
-                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
+                        val delay = (Random.nextInt(5) + 1) * 1000 // sleep thread for x ms
                         Thread.sleep(delay.toLong())
                         return transformRawResponseIntoComment(t)
                     }
                 })
-                .subscribeOn(Schedulers.io())
+                ?.subscribeOn(Schedulers.io())
         }
     }
 

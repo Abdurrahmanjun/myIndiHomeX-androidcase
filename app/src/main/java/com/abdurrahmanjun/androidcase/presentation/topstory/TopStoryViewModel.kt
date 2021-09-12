@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import com.abdurrahmanjun.androidcase.business.datasource.cache.AndroidCaseDatabase
 import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.Favorite
 import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.FavoriteDao
+import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.FavoriteRepository
 import com.abdurrahmanjun.androidcase.business.datasource.network.ServiceGenerator
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.business.domain.interactor.GetTopStory
@@ -23,7 +24,7 @@ import java.util.*
 
 class TopStoryViewModel (application: Application) : AndroidViewModel(application) {
 
-    private var dao: FavoriteDao
+    private val repository: FavoriteRepository
     val disposables = CompositeDisposable()
     val getTopStory: GetTopStory = GetTopStory()
 
@@ -33,13 +34,14 @@ class TopStoryViewModel (application: Application) : AndroidViewModel(applicatio
         get() = _listFavoriteDataState
 
     init {
-        dao = AndroidCaseDatabase.getInstance(application).favoriteDao
+        val dao = AndroidCaseDatabase.getInstance(application).favoriteDao
+        repository = FavoriteRepository(dao)
     }
 
     fun populateFavoriteStory() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (dao.getAll() != null) {
-                _listFavoriteDataState.postValue(dao.getAll())
+            if (repository.getAll() != null) {
+                _listFavoriteDataState.postValue(repository.getAll())
                 Log.d("FavoriteStories", _listFavoriteDataState.value.toString())
             }
         }
