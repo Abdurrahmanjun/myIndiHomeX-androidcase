@@ -6,23 +6,18 @@ import com.abdurrahmanjun.androidcase.business.datasource.network.story.response
 import com.abdurrahmanjun.androidcase.business.domain.models.Story
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 import kotlin.collections.ArrayList
 
 class GetTopStory {
 
-    // execute - list of top story
-    // execute - comments every item list top story
-    // execute - get favorite headline
-
-    fun execute(): Observable<ArrayList<Story>>? {
+    fun getTopStoryObservable(): Observable<java.util.ArrayList<Int>>? {
         return ServiceGenerator.getRequestApi()
             .getStory()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .map { list ->
-                transformArrayIntegerIntoPost(list)
-            }
     }
 
     fun transformArrayIntegerIntoPost(list: List<Int>) : ArrayList<Story> {
@@ -37,14 +32,18 @@ class GetTopStory {
         return listOfStory
     }
 
-    fun execute(story: Story): Observable<Story>? {
-        return story.id?.let {
+    fun getCommentsObservable(post: Int): Observable<Story> {
+        return post.let {
             ServiceGenerator.getRequestApi()
                 .getStoryDetails(it)
+                .map(object : Function<StoryDetailsResult?, Story> {
+                    override fun apply(t: StoryDetailsResult): Story {
+                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
+                        Thread.sleep(delay.toLong())
+                        return transformRawResponseIntoStory(t)
+                    }
+                })
                 .subscribeOn(Schedulers.io())
-                .map { response ->
-                    transformRawResponseIntoStory(response)
-                }
         }
     }
 

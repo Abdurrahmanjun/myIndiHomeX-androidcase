@@ -1,13 +1,24 @@
 package com.abdurrahmanjun.androidcase.business.domain.interactor
 
 import android.util.Log
+import com.abdurrahmanjun.androidcase.business.datasource.network.ServiceGenerator
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsCommentResult
+import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsResult
 import com.abdurrahmanjun.androidcase.business.domain.models.Comment
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import java.util.*
+import kotlin.collections.ArrayList
 
 class GetStoryDetails {
-    // execute - details story
-    // execute - details comments list
-    // execute - post details story
+
+    fun getDetailsStoryObservable(storyId : Int): Observable<StoryDetailsResult>? {
+        return ServiceGenerator.getRequestApi()
+            .getStoryDetails(storyId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
 
     fun transformArrayIntegerIntoComment(list: List<Int>) : ArrayList<Comment> {
 
@@ -19,6 +30,21 @@ class GetStoryDetails {
         }
 
         return listOfStory
+    }
+
+    fun getCommentsDetailsObservable(commentId: Int): Observable<Comment> {
+        return commentId.let {
+            ServiceGenerator.getRequestApi()
+                .getCommentsOnDetails(it)
+                .map(object : io.reactivex.functions.Function<StoryDetailsCommentResult?, Comment> {
+                    override fun apply(t: StoryDetailsCommentResult): Comment {
+                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
+                        Thread.sleep(delay.toLong())
+                        return transformRawResponseIntoComment(t)
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+        }
     }
 
     fun transformRawResponseIntoComment(response: StoryDetailsCommentResult): Comment {

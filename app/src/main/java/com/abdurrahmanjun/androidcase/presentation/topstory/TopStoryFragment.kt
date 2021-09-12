@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -80,7 +81,8 @@ class TopStoryFragment : Fragment() {
         // top story stuff
         binding.progressBar.visibility = View.VISIBLE
         Thread.sleep(4000)
-        viewModel.getTopStoryObservable()
+        viewModel.getTopStory.
+            getTopStoryObservable()
             ?.subscribeOn(Schedulers.io())
             ?.flatMap(object : Function<List<Int>, ObservableSource<Int>> {
                 override fun apply(t: List<Int>): ObservableSource<Int> {
@@ -90,7 +92,7 @@ class TopStoryFragment : Fragment() {
                         .subscribeOn(Schedulers.io())
                 }
             })
-            ?.flatMap({viewModel.getCommentsObservable(it)})
+            ?.flatMap({viewModel.getTopStory.getCommentsObservable(it)})
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe(object : Observer<Story?> {
                 override fun onSubscribe(d: Disposable) {
@@ -113,7 +115,7 @@ class TopStoryFragment : Fragment() {
         binding.cvOthersFav.visibility = GONE
         binding.tvFavorite.text = s
         if (applySecondary) {
-            binding.tvFavorite.setTextColor(resources.getColor(R.color.md_grey_light))
+            binding.tvFavorite.setTextColor(ContextCompat.getColor(this.requireContext(),R.color.md_grey_light))
         }
     }
 

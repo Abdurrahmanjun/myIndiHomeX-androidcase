@@ -66,7 +66,8 @@ class StoryDetailsFragment : Fragment() {
             viewModel.favoriteAction(binding.tvTitleticket.text.toString())
         }
 
-        viewModel.getDetailsStoryObservable()
+        viewModel.getStoryDetails
+            .getDetailsStoryObservable(viewModel.storyId)
             ?.subscribeOn(Schedulers.io())
             ?.flatMap(object : io.reactivex.functions.Function<StoryDetailsResult, ObservableSource<Int>> {
                 override fun apply(t: StoryDetailsResult): ObservableSource<Int> {
@@ -78,7 +79,7 @@ class StoryDetailsFragment : Fragment() {
                         .subscribeOn(Schedulers.io())
                 }
             })
-            ?.flatMap { commentId -> viewModel.getCommentsDetailsObservable(commentId) }
+            ?.flatMap { commentId -> viewModel.getStoryDetails.getCommentsDetailsObservable(commentId) }
             ?.observeOn(AndroidSchedulers.mainThread())
             ?.subscribe(object : Observer<Comment?> {
                 override fun onSubscribe(d: Disposable) {

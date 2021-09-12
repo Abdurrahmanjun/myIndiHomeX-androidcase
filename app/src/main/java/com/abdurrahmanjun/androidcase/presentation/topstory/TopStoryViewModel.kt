@@ -36,28 +36,6 @@ class TopStoryViewModel (application: Application) : AndroidViewModel(applicatio
         dao = AndroidCaseDatabase.getInstance(application).favoriteDao
     }
 
-    fun getTopStoryObservable(): Observable<ArrayList<Int>>? {
-        return ServiceGenerator.getRequestApi()
-            .getStory()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun getCommentsObservable(post: Int): Observable<Story> {
-        return post.let {
-            ServiceGenerator.getRequestApi()
-                .getStoryDetails(it)
-                .map(object : Function<StoryDetailsResult?, Story> {
-                    override fun apply(t: StoryDetailsResult): Story {
-                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
-                        Thread.sleep(delay.toLong())
-                        return getTopStory.transformRawResponseIntoStory(t)
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-        }
-    }
-
     fun populateFavoriteStory() {
         viewModelScope.launch(Dispatchers.IO) {
             if (dao.getAll() != null) {

@@ -1,11 +1,10 @@
 package com.abdurrahmanjun.androidcase.presentation.storydetails
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.abdurrahmanjun.androidcase.business.datasource.cache.AndroidCaseDatabase
 import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.Favorite
-import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.FavoriteDao
+import com.abdurrahmanjun.androidcase.business.datasource.cache.favorite.FavoriteRepository
 import com.abdurrahmanjun.androidcase.business.datasource.network.ServiceGenerator
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsCommentResult
 import com.abdurrahmanjun.androidcase.business.datasource.network.story.response.StoryDetailsResult
@@ -21,7 +20,7 @@ import java.util.*
 
 class StoryDetailsViewModel (application: Application) :AndroidViewModel(application) {
 
-    private var dao: FavoriteDao
+    private val repository: FavoriteRepository
     var storyId: Int = 0
     val disposables = CompositeDisposable()
     val getStoryDetails: GetStoryDetails = GetStoryDetails()
@@ -32,45 +31,23 @@ class StoryDetailsViewModel (application: Application) :AndroidViewModel(applica
         get() = _booleanFavoriteDataState
 
     init {
-        dao = AndroidCaseDatabase.getInstance(application).favoriteDao
-    }
-
-    fun getDetailsStoryObservable(): Observable<StoryDetailsResult>? {
-        return ServiceGenerator.getRequestApi()
-            .getStoryDetails(storyId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun getCommentsDetailsObservable(commentId: Int): Observable<Comment> {
-        return commentId.let {
-            ServiceGenerator.getRequestApi()
-                .getCommentsOnDetails(it)
-                .map(object : io.reactivex.functions.Function<StoryDetailsCommentResult?, Comment> {
-                    override fun apply(t: StoryDetailsCommentResult): Comment {
-                        val delay = (Random().nextInt(5) + 1) * 1000 // sleep thread for x ms
-                        Thread.sleep(delay.toLong())
-                        return getStoryDetails.transformRawResponseIntoComment(t)
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-        }
+        val dao = AndroidCaseDatabase.getInstance(application).favoriteDao
+        repository = FavoriteRepository(dao)
     }
 
     fun isFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("StoryDetailsViewModel", "isFavorite: " + dao.loadId(storyId))
-            _booleanFavoriteDataState.postValue(dao.loadId(storyId) != null)
+            _booleanFavoriteDataState.postValue(repository.loadId(storyId) != null)
         }
     }
 
     fun favoriteAction(title : String) {
         viewModelScope.launch(Dispatchers.IO) {
             if (!_booleanFavoriteDataState.value!!) {
-                dao.insert(Favorite(storyId,title))
+                repository.insert(Favorite(storyId,title))
                 _booleanFavoriteDataState.postValue(true)
             } else {
-                dao.deleteByStoryId(storyId)
+                repository.delete(storyId)
                 _booleanFavoriteDataState.postValue(false)
             }
         }
